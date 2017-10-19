@@ -1,0 +1,19 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #3b3b3b;
+  padding: 2%;
+  color: white;
+}
+
+.App-header img {
+  max-width: 100%;
+}
+
+.scoreboard {
+  padding-top: 50px;
+  margin-left: 10%;
+  max-width: 80%;
+}
