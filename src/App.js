@@ -19,16 +19,28 @@ class App extends Component {
   }
 
   componentWillMount() {
-    this.fetchStats().then((res) => {
-      this.setState({
-        data: res.Users
-      })
-    })
+
+    let refreshFunc = () => {
+      this.fetchStats().then((res) => {
+        let sorted = res.Users.sort((b, a) => {
+          return ((a.Tasks < b.Tasks) ? -1 : ((a.Tasks == b.Tasks) ? 0 : 1));
+        });
+        this.setState({
+          data: res.Users
+        })
+      });
+    };
+
+    window.setInterval(refreshFunc, 5000);
+
+    refreshFunc();
   }
 
   render() {
     const userNames = [];
     const points = [];
+
+    console.log("this.state.data", this.state.data);
 
     for (let key in this.state.data) {
       let user = this.state.data[key];
@@ -62,16 +74,20 @@ class App extends Component {
         footerFontSize: 20,
       },
       scales: {
-        xAxes: [{
-          ticks: {
-            fontSize: 25,
+        xAxes: [
+          {
+            ticks: {
+              fontSize: 25,
+            }
           }
-        }],
-        yAxes: [{
-          ticks: {
-            fontSize: 20,
+        ],
+        yAxes: [
+          {
+            ticks: {
+              fontSize: 20,
+            }
           }
-        }],
+        ],
       },
       responsiveAnimationDuration: 1000,
     };
