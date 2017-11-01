@@ -14,6 +14,15 @@
 }
 
 .scoreboard {
-  margin-left: 20%;
-  margin-right: 20%;
+  margin-left: 5%;
+  margin-right: 5%;
+  display: flex;
+}
+
+.user-chart {
+  flex-grow: 2;
+}
+
+.team-chart {
+  flex-grow: 1;
 }

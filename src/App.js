@@ -22,11 +22,11 @@ class App extends Component {
 
     let refreshFunc = () => {
       this.fetchStats().then((res) => {
-        let sorted = res.Users.sort((b, a) => {
-          return ((a.Tasks < b.Tasks) ? -1 : ((a.Tasks == b.Tasks) ? 0 : 1));
+        let sorted = res.users.sort((b, a) => {
+          return ((a.tasks < b.tasks) ? -1 : ((a.tasks === b.tasks) ? 0 : 1));
         });
         this.setState({
-          data: res.Users
+          data: res
         })
       });
     };
@@ -38,17 +38,27 @@ class App extends Component {
 
   render() {
     const userNames = [];
-    const points = [];
+    const userPoints = [];
+    const teamNames = [];
+    const teamPoints = [];
+
+    if (!this.state.data.users) {
+      return null;
+    }
 
     console.log("this.state.data", this.state.data);
 
-    for (let key in this.state.data) {
-      let user = this.state.data[key];
-      userNames.push(user.Username);
-      points.push(user.Tasks);
-    }
+    /* User */
+    this.state.data.users.sort((a, b) => {
+      return b.available_blocks - a.available_blocks;
+    });
 
-    const data = (canvas) => {
+    this.state.data.users.forEach((user) => {
+      userNames.push(user.username);
+      userPoints.push(user.available_blocks);
+    });
+
+    const userData = (canvas) => {
       const ctx = canvas.getContext("2d");
 
       return {
@@ -57,13 +67,13 @@ class App extends Component {
           {
             backgroundColor: 'rgb(143,227,143)',
             borderColor: 'rgb(96,158,96)',
-            data: points,
+            data: userPoints,
           }
         ]
       }
     };
 
-    const options = {
+    const userOptions = {
       legend: {
         display: false,
         defaultFontSize: 20,
@@ -92,14 +102,80 @@ class App extends Component {
       responsiveAnimationDuration: 1000,
     };
 
+    /* Team */
+    this.state.data.users.sort((a, b) => {
+      return b.available_blocks - a.available_blocks;
+    });
+
+    this.state.data.teams.forEach((team) => {
+      teamNames.push(team.teamname);
+      teamPoints.push(team.available_blocks);
+    });
+
+
+    const teamData = (canvas) => {
+      const ctx = canvas.getContext("2d");
+
+      console.log("teamNames", teamNames);
+      console.log("teamPoints", teamPoints);
+
+
+      return {
+        labels: teamNames,
+        datasets: [
+          {
+            backgroundColor: 'rgb(258,227,143)',
+            borderColor: 'rgb(96,258,96)',
+            data: teamPoints,
+          }
+        ]
+      }
+    };
+
+    const teamOptions = {
+      legend: {
+        display: false,
+        defaultFontSize: 20,
+      },
+      tooltips: {
+        titleFontSize: 20,
+        bodyFontSize: 20,
+        footerFontSize: 20,
+      },
+      scales: {
+        xAxes: [
+          {
+            ticks: {
+              fontSize: 25,
+            }
+          }
+        ],
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+              fontSize: 20,
+            }
+          }
+        ],
+      },
+      responsiveAnimationDuration: 1000,
+    };
+
     return (
         <div className="App">
           <header className="App-header">
             <img src={logo} className="App-logo" alt="logo"/>
           </header>
           <div className="scoreboard">
-            <h1>Number of available blocks</h1>
-            <Bar data={data} options={options}/>
+            <div className="user-chart">
+              <h1>User available blocks</h1>
+              <Bar data={userData} options={userOptions}/>
+            </div>
+            <div className="team-chart">
+              <h1>Team available blocks</h1>
+              <Bar data={teamData} options={teamOptions}/>
+            </div>
           </div>
         </div>
     );
